@@ -1,6 +1,6 @@
 # react-dropdown
 
-Basic pulldown components that support React and React native
+Basic dropdown components that support React and React native
 
 ## Installation
 
