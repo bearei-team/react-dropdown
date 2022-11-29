@@ -8,7 +8,7 @@ import {render} from '../utils/testUtils';
 describe('test/components/Dropdown.test.ts', () => {
   test('It should be a render dropdown', async () => {
     const {getByDataCy} = render(
-      <Dropdown<HTMLButtonElement>
+      <Dropdown<HTMLDivElement>
         renderMain={({...props}) => (
           <div {...pickHTMLAttributes(props)} data-cy="dropdown">
             "dropdown"
@@ -32,9 +32,7 @@ describe('test/components/Dropdown.test.ts', () => {
 
     const {getByDataCy} = render(
       <Dropdown<HTMLDivElement>
-        onVisible={({visible}) => {
-          result = visible;
-        }}
+        onVisible={({visible}) => (result = visible)}
         onClick={() => {}}
         renderMain={({onClick, ...props}) => (
           <div {...pickHTMLAttributes(props)} data-cy="dropdown" onClick={onClick}>
@@ -48,20 +46,18 @@ describe('test/components/Dropdown.test.ts', () => {
     expect(typeof result).toEqual('boolean');
   });
 
-  test('It should be a disabled button', async () => {
+  test('It should be a disabled dropdown', async () => {
     let result!: boolean | undefined;
 
     const {getByDataCy} = render(
       <Dropdown<HTMLDivElement>
-        onVisible={({visible}) => {
-          result = visible;
-        }}
+        onVisible={({visible}) => (result = visible)}
         onClick={() => {}}
         disabled
         renderMain={({...props}) => (
-          <button {...pickHTMLAttributes(props)} data-cy="dropdown">
+          <div {...pickHTMLAttributes(props)} data-cy="dropdown">
             "dropdown"
-          </button>
+          </div>
         )}
       />,
     );
@@ -75,15 +71,13 @@ describe('test/components/Dropdown.test.ts', () => {
 
     const {getByDataCy} = render(
       <Dropdown<HTMLButtonElement>
-        onVisible={({visible}) => {
-          result = visible;
-        }}
+        onVisible={({visible}) => (result = visible)}
         onClick={() => {}}
         loading
         renderMain={({...props}) => (
-          <button {...pickHTMLAttributes(props)} data-cy="dropdown">
+          <div {...pickHTMLAttributes(props)} data-cy="dropdown">
             "dropdown"
-          </button>
+          </div>
         )}
       />,
     );

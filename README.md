@@ -1,48 +1,50 @@
-# react-button
+# react-dropdown
 
-A basic button component that supports react and native react.
+Basic pulldown components that support React and React native
 
 ## Installation
 
-> yarn add @bearei/react-button --save
+> yarn add @bearei/react-dropdown --save
 
 ## Parameters
 
+#### Dropdown options
+
 | Name | Type | Required | Description |
 | :-- | --: | --: | :-- |
-| icon | `ReactNode` | ✘ | Set button icon component |
-| disabled | `boolean` | ✘ | Whether or not to disable the button |
-| loading | `boolean` | ✘ | Whether the button is loading |
-| text | `string` | ✘ | Button to display text |
-| size | `small` `medium` `large` | ✘ | Set the button size |
-| shape | `square` `circle` `round` | ✘ | Set the button shape |
-| type | `primary` `secondary` `dashed` `link` `text` | ✘ | Set the button type |
-| htmlType | `ButtonHTMLAttributes<HTMLButtonElement>['type']` | ✘ | Set the native type value of the HTML button |
-| danger | `boolean` | ✘ | Set the danger button |
-| warning | `boolean` | ✘ | Set the warning button |
-| onClick | `(e: ButtonClickEvent) => void` | ✘ | A callback when a button is clicked |
-| onTouchEnd | `(e: ButtonTouchEvent) => void` | ✘ | A callback for pressing a button |
-| onPress | `(e: ButtonPressEvent) => void` | ✘ | A callback for pressing a button -- react native |
-| renderIcon | `(props: ButtonIconProps) => ReactNode` | ✘ | Render the button icon |
-| renderMain | `(props: ButtonMainProps) => ReactNode` | ✘ | Render the button main |
-| renderContainer | `(props: ButtonContainerProps) => ReactNode` | ✘ | Render the button container |
+| visible | `boolean` | ✘ | Dropdown the visible status |
+| event | `React.MouseEvent` `React.TouchEvent` `GestureResponderEvent` | ✘ | Event that triggers a dropdown visible state change |
+
+#### Dropdown
+
+| Name | Type | Required | Description |
+| :-- | --: | --: | :-- |
+| defaultVisible | `boolean` | ✘ | Set the default visible state of the dropdown |
+| visible | `boolean` | ✘ | Dropdown the visible status |
+| menu | `MenuProps` | ✘ | Dropdown menu configuration options -- [Menu](https://github.com/bear-ei/react-menu) |
+| disabled | `boolean` | ✘ | Whether or not to disable the dropdown |
+| loading | `boolean` | ✘ | Whether or not the dropdown is loading |
+| onVisible | `(options: DropdownOptions) => void` | ✘ | Call this function when the dropdown closes |
+| onClose | `(options: DropdownOptions) => void` | ✘ | Call this function when the dropdown closes |
+| onClick | `(e: DropdownClickEvent) => void` | ✘ | Call this function back when you click the dropdown |
+| onTouchEnd | `(e: DropdownTouchEvent) => void` | ✘ | Call this function after pressing the dropdown |
+| onPress | `(e: DropdownPressEvent) => void` | ✘ | Call this function after pressing the dropdown -- react native |
+| renderMain | `(props: props: DropdownMainProps) => ReactNode` | ✘ | Render the dropdown main |
+| renderContainer | `(props: props: DropdownContainerProps) => ReactNode` | ✘ | Render the dropdown container |
 
 ## Use
 
 ```typescript
 import React from 'React';
 import ReactDOM from 'react-dom';
-import Button from '@bearei/react-button';
+import Dropdown from '@bearei/react-dropdown';
 
-const button = (
-  <Button<HTMLButtonElement>
-    text="button"
-    icon={<i>"icon"</i>}
-    renderIcon={({children}) => <i data-cy="icon">{children}</i>}
-    renderMain={({text, ...props}) => (
-      <button {...pickHTMLAttributes(props)} data-cy="button" type="reset">
-        {text}
-      </button>
+const dropdown = (
+  <Dropdown<HTMLDivElement>
+    renderMain={({...props}) => (
+      <div {...pickHTMLAttributes(props)} data-cy="dropdown">
+        "dropdown"
+      </div>
     )}
     renderContainer={({id, children}) => (
       <div data-cy="container" data-id={id} tabIndex={1}>
@@ -52,5 +54,5 @@ const button = (
   />
 );
 
-ReactDOM.render(button, container);
+ReactDOM.render(dropdown, container);
 ```
