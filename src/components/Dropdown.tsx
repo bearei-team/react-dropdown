@@ -100,7 +100,7 @@ export interface DropdownProps<T, E> extends BaseDropdownProps<T, E> {
 export interface DropdownChildrenProps<T, E>
   extends Omit<BaseDropdownProps<T, E>, 'ref' | 'onVisible' | 'onClose'> {
   /**
-   * Component Unique ID
+   * Component unique ID
    */
   id: string;
   children?: ReactNode;
@@ -119,7 +119,7 @@ export type DropdownMainProps<T, E> = DropdownChildrenProps<T, E>;
 export type DropdownContainerProps<T, E> = DropdownChildrenProps<T, E> &
   Pick<BaseDropdownProps<T, E>, 'ref'>;
 
-function Dropdown<T, E = React.MouseEvent<T, MouseEvent>>({
+function Dropdown<T, E = DropdownClickEvent<T>>({
   ref,
   disabled,
   loading,
