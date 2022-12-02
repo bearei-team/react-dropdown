@@ -34,15 +34,16 @@ describe('test/components/Dropdown.test.ts', () => {
       <Dropdown<HTMLDivElement>
         onVisible={({visible}) => (result = visible)}
         onClick={() => {}}
-        renderMain={({onClick, ...props}) => (
-          <div {...pickHTMLAttributes(props)} data-cy="dropdown" onClick={onClick}>
+        renderMain={() => <div data-cy="dropdown">"dropdown"</div>}
+        renderContainer={({onClick, ...props}) => (
+          <div {...pickHTMLAttributes(props)} data-cy="container" onClick={onClick}>
             "dropdown"
           </div>
         )}
       />,
     );
 
-    await user.click(getByDataCy('dropdown'));
+    await user.click(getByDataCy('container'));
     expect(typeof result).toEqual('boolean');
   });
 
@@ -50,7 +51,7 @@ describe('test/components/Dropdown.test.ts', () => {
     let result!: boolean | undefined;
 
     const {getByDataCy} = render(
-      <Dropdown<HTMLDivElement>
+      <Dropdown
         onVisible={({visible}) => (result = visible)}
         onClick={() => {}}
         disabled
@@ -59,10 +60,15 @@ describe('test/components/Dropdown.test.ts', () => {
             "dropdown"
           </div>
         )}
+        renderContainer={({onClick, ...props}) => (
+          <div {...pickHTMLAttributes(props)} data-cy="container" onClick={onClick}>
+            "dropdown"
+          </div>
+        )}
       />,
     );
 
-    getByDataCy('dropdown');
+    getByDataCy('container');
     expect(result).toEqual(undefined);
   });
 
@@ -70,7 +76,7 @@ describe('test/components/Dropdown.test.ts', () => {
     let result!: boolean | undefined;
 
     const {getByDataCy} = render(
-      <Dropdown<HTMLButtonElement>
+      <Dropdown
         onVisible={({visible}) => (result = visible)}
         onClick={() => {}}
         loading
@@ -79,10 +85,15 @@ describe('test/components/Dropdown.test.ts', () => {
             "dropdown"
           </div>
         )}
+        renderContainer={({onClick, ...props}) => (
+          <div {...pickHTMLAttributes(props)} data-cy="container" onClick={onClick}>
+            "dropdown"
+          </div>
+        )}
       />,
     );
 
-    getByDataCy('dropdown');
+    getByDataCy('container');
     expect(result).toEqual(undefined);
   });
 });

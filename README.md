@@ -26,9 +26,9 @@ Base dropdown components that support React and React native
 | loading | `boolean` | ✘ | Whether or not the dropdown is loading |
 | onVisible | `(options: DropdownOptions) => void` | ✘ | Call this function when the dropdown closes |
 | onClose | `(options: DropdownOptions) => void` | ✘ | Call this function when the dropdown closes |
-| onClick | `(e: DropdownClickEvent) => void` | ✘ | Call this function back when you click the dropdown |
-| onTouchEnd | `(e: DropdownTouchEvent) => void` | ✘ | Call this function after pressing the dropdown |
-| onPress | `(e: DropdownPressEvent) => void` | ✘ | Call this function after pressing the dropdown -- react native |
+| onClick | `(e: MouseEvent) => void` | ✘ | Call this function back when you click the dropdown |
+| onTouchEnd | `(e: TouchEvent) => void` | ✘ | Call this function after pressing the dropdown |
+| onPress | `(e: GestureResponderEvent) => void` | ✘ | Call this function after pressing the dropdown -- react native |
 | renderMain | `(props: props: DropdownMainProps) => ReactNode` | ✘ | Render the dropdown main |
 | renderContainer | `(props: props: DropdownContainerProps) => ReactNode` | ✘ | Render the dropdown container |
 
