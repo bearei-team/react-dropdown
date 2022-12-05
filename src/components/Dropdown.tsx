@@ -1,14 +1,22 @@
 import type {BaseMenuProps} from '@bearei/react-menu';
-import type {HandleEvent} from '@bearei/react-util/lib/event';
-import handleEvent from '@bearei/react-util/lib/event';
-import type {DetailedHTMLProps, HTMLAttributes, ReactNode, Ref, TouchEvent} from 'react';
-import {useCallback, useEffect, useId, useState} from 'react';
+import {bindEvents, handleDefaultEvent} from '@bearei/react-util/lib/event';
+import {
+  DetailedHTMLProps,
+  HTMLAttributes,
+  ReactNode,
+  Ref,
+  TouchEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useState,
+} from 'react';
 import type {GestureResponderEvent, ViewProps} from 'react-native';
 
 /**
  * Dropdown options
  */
-export interface DropdownOptions<E> {
+export interface DropdownOptions<E = unknown> {
   /**
    * Dropdown the visible status
    */
@@ -23,9 +31,9 @@ export interface DropdownOptions<E> {
 /**
  * Base dropdown props
  */
-export interface BaseDropdownProps<T, E>
+export interface BaseDropdownProps<T = HTMLElement>
   extends Omit<
-    DetailedHTMLProps<HTMLAttributes<T>, T> & ViewProps & Pick<DropdownOptions<E>, 'visible'>,
+    DetailedHTMLProps<HTMLAttributes<T>, T> & ViewProps & Pick<DropdownOptions, 'visible'>,
     'onClick' | 'onTouchEnd' | 'onPress'
   > {
   /**
@@ -41,7 +49,7 @@ export interface BaseDropdownProps<T, E>
   /**
    * Dropdown menu configuration options
    */
-  menu?: BaseMenuProps<T, E>;
+  menu?: BaseMenuProps<T>;
 
   /**
    * Whether or not to disable the dropdown
@@ -56,114 +64,113 @@ export interface BaseDropdownProps<T, E>
   /**
    * Call back this function when the dropdown visible state changes
    */
-  onVisible?: (options: DropdownOptions<E>) => void;
+  onVisible?: <E>(options: DropdownOptions<E>) => void;
 
   /**
    * Call this function when the dropdown closes
    */
-  onClose?: (options: DropdownOptions<E>) => void;
+  onClose?: <E>(options: DropdownOptions<E>) => void;
 
   /**
-   * Call this function back when you click the dropdown
+   * Call this function back when you click the card
    */
-  onClick?: (e: DropdownClickEvent<T>) => void;
+  onClick?: (e: React.MouseEvent<T, MouseEvent>) => void;
 
   /**
-   * Call this function after pressing the dropdown
+   * Call this function after pressing the card
    */
-  onTouchEnd?: (e: DropdownTouchEvent<T>) => void;
+  onTouchEnd?: (e: TouchEvent<T>) => void;
 
   /**
-   * Call this function after pressing the dropdown -- react native
+   * Call this function after pressing the card -- react native
    */
-  onPress?: (e: DropdownPressEvent) => void;
+  onPress?: (e: GestureResponderEvent) => void;
 }
 
 /**
  * Dropdown props
  */
-export interface DropdownProps<T, E> extends BaseDropdownProps<T, E> {
+export interface DropdownProps<T> extends BaseDropdownProps<T> {
   /**
    * Render the dropdown main
    */
-  renderMain?: (props: DropdownMainProps<T, E>) => ReactNode;
+  renderMain?: (props: DropdownMainProps<T>) => ReactNode;
 
   /**
    * Render the dropdown container
    */
-  renderContainer?: (props: DropdownContainerProps<T, E>) => ReactNode;
+  renderContainer?: (props: DropdownContainerProps<T>) => ReactNode;
 }
 
 /**
  * Dropdown children props
  */
-export interface DropdownChildrenProps<T, E>
-  extends Omit<BaseDropdownProps<T, E>, 'ref' | 'onVisible' | 'onClose'> {
+export interface DropdownChildrenProps<T> extends Omit<BaseDropdownProps<T>, 'ref'> {
   /**
    * Component unique ID
    */
   id: string;
   children?: ReactNode;
-
-  /**
-   * Used to handle some common default events
-   */
-  handleEvent: HandleEvent;
 }
 
-export type DropdownClickEvent<T> = React.MouseEvent<T, MouseEvent>;
-export type DropdownTouchEvent<T> = TouchEvent<T>;
-export type DropdownPressEvent = GestureResponderEvent;
+export type DropdownMainProps<T> = DropdownChildrenProps<T>;
+export type DropdownContainerProps<T> = DropdownChildrenProps<T> &
+  Pick<BaseDropdownProps<T>, 'ref'>;
 
-export type DropdownMainProps<T, E> = DropdownChildrenProps<T, E>;
-export type DropdownContainerProps<T, E> = DropdownChildrenProps<T, E> &
-  Pick<BaseDropdownProps<T, E>, 'ref'>;
+const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
+  const {
+    ref,
+    disabled,
+    loading,
+    visible,
+    defaultVisible,
+    onClick,
+    onPress,
+    onTouchEnd,
+    onVisible,
+    onClose,
+    renderMain,
+    renderContainer,
+    ...args
+  } = props;
 
-function Dropdown<T, E = DropdownClickEvent<T>>({
-  ref,
-  disabled,
-  loading,
-  visible,
-  defaultVisible,
-  onClick,
-  onPress,
-  onTouchEnd,
-  onVisible,
-  onClose,
-  renderMain,
-  renderContainer,
-  ...props
-}: DropdownProps<T, E>) {
   const id = useId();
   const [status, setStatus] = useState('idle');
-  const [dropdownOptions, setDropDownOptions] = useState<DropdownOptions<E>>({visible: false});
-  const childrenProps = {...props, visible: dropdownOptions.visible, id, handleEvent};
+  const [dropdownOptions, setDropDownOptions] = useState<DropdownOptions>({visible: false});
+  const events = Object.keys(props).filter(key => key.startsWith('on'));
+  const childrenProps = {...args, visible: dropdownOptions.visible, id};
   const handleDropdownOptionsChange = useCallback(
-    (options: DropdownOptions<E>) => {
+    <E,>(options: DropdownOptions<E>) => {
       onVisible?.(options);
       !options.visible && onClose?.(options);
     },
     [onClose, onVisible],
   );
 
-  function handleCallback<C>(callback: (e: C) => void) {
-    const response = !disabled && !loading;
+  const handleResponse = <E,>(e: E, callback?: (e: E) => void) => {
+    const response = !loading && !disabled;
 
-    return (e: C) => {
-      if (response) {
-        const nextVisible = !dropdownOptions.visible;
-        const options = {event: e as C & E, visible: nextVisible};
+    if (response) {
+      const nextVisible = !dropdownOptions.visible;
+      const options = {event: e, visible: nextVisible};
 
-        setDropDownOptions(options);
-        handleDropdownOptionsChange(options);
-        callback(e);
-      }
+      setDropDownOptions(options);
+      handleDropdownOptionsChange(options);
+      callback?.(e);
+    }
+  };
+
+  const handleCallback = (key: string) => {
+    const event = {
+      onClick: handleDefaultEvent((e: React.MouseEvent<T, MouseEvent>) =>
+        handleResponse(e, onClick),
+      ),
+      onTouchEnd: handleDefaultEvent((e: TouchEvent<T>) => handleResponse(e, onTouchEnd)),
+      onPress: handleDefaultEvent((e: GestureResponderEvent) => handleResponse(e, onPress)),
     };
-  }
 
-  const handleClick = handleCallback((e: DropdownClickEvent<T>) => onClick?.(e));
-  const handleTouchEnd = handleCallback((e: DropdownTouchEvent<T>) => onTouchEnd?.(e));
-  const handPress = handleCallback((e: DropdownPressEvent) => onPress?.(e));
+    return event[key as keyof typeof event];
+  };
 
   useEffect(() => {
     const nextVisible = status !== 'idle' ? visible : defaultVisible ?? visible;
@@ -180,16 +187,16 @@ function Dropdown<T, E = DropdownClickEvent<T>>({
     status === 'idle' && setStatus('succeeded');
   }, [defaultVisible, handleDropdownOptionsChange, status, visible]);
 
-  const main = renderMain?.({
+  const main = renderMain?.({...childrenProps});
+  const content = <>{main}</>;
+  const container = renderContainer?.({
     ...childrenProps,
-    ...(onClick ? {onClick: handleEvent(handleClick)} : undefined),
-    ...(onTouchEnd ? {onTouchEnd: handleEvent(handleTouchEnd)} : undefined),
-    ...(onPress ? {onPress: handleEvent(handPress)} : undefined),
+    ref,
+    children: content,
+    ...bindEvents(events, handleCallback),
   });
 
-  const container = renderContainer?.({...childrenProps, ref, children: main}) ?? main;
-
   return <>{container}</>;
-}
+};
 
 export default Dropdown;
