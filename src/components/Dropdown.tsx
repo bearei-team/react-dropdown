@@ -1,15 +1,15 @@
 import type {BaseMenuProps} from '@bearei/react-menu';
 import {bindEvents, handleDefaultEvent} from '@bearei/react-util/lib/event';
 import {
-  useCallback,
-  useEffect,
-  useId,
-  useState,
   DetailedHTMLProps,
   HTMLAttributes,
   ReactNode,
   Ref,
   TouchEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useState,
 } from 'react';
 import type {GestureResponderEvent, ViewProps} from 'react-native';
 
@@ -64,12 +64,12 @@ export interface BaseDropdownProps<T = HTMLElement>
   /**
    * Call back this function when the dropdown visible state changes
    */
-  onVisible?: (options: DropdownOptions) => void;
+  onVisible?: <E>(options: DropdownOptions<E>) => void;
 
   /**
    * Call this function when the dropdown closes
    */
-  onClose?: (options: DropdownOptions) => void;
+  onClose?: <E>(options: DropdownOptions<E>) => void;
 
   /**
    * Call this function back when you click the card
@@ -135,9 +135,9 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
   } = props;
 
   const id = useId();
-  const events = Object.keys(props).filter(key => key.startsWith('on'));
   const [status, setStatus] = useState('idle');
   const [dropdownOptions, setDropDownOptions] = useState<DropdownOptions>({visible: false});
+  const events = Object.keys(props).filter(key => key.startsWith('on'));
   const childrenProps = {...args, visible: dropdownOptions.visible, id};
   const handleDropdownOptionsChange = useCallback(
     <E,>(options: DropdownOptions<E>) => {
@@ -147,20 +147,20 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
     [onClose, onVisible],
   );
 
+  const handleResponse = <E,>(e: E, callback?: (e: E) => void) => {
+    const response = !loading && !disabled;
+
+    if (response) {
+      const nextVisible = !dropdownOptions.visible;
+      const options = {event: e, visible: nextVisible};
+
+      setDropDownOptions(options);
+      handleDropdownOptionsChange(options);
+      callback?.(e);
+    }
+  };
+
   const handleCallback = (key: string) => {
-    const handleResponse = <E,>(e: E, callback?: (e: E) => void) => {
-      const response = !loading && !disabled;
-
-      if (response) {
-        const nextVisible = !dropdownOptions.visible;
-        const options = {event: e, visible: nextVisible};
-
-        setDropDownOptions(options);
-        handleDropdownOptionsChange(options);
-        callback?.(e);
-      }
-    };
-
     const event = {
       onClick: handleDefaultEvent((e: React.MouseEvent<T, MouseEvent>) =>
         handleResponse(e, onClick),
