@@ -8,7 +8,7 @@ import {render} from '../utils/testUtils';
 describe('test/components/Dropdown.test.ts', () => {
   test('It should be a render dropdown', async () => {
     const {getByDataCy} = render(
-      <Dropdown<HTMLDivElement>
+      <Dropdown
         renderMain={({...props}) => (
           <div {...pickHTMLAttributes(props)} data-cy="dropdown">
             "dropdown"
@@ -31,7 +31,7 @@ describe('test/components/Dropdown.test.ts', () => {
     let result!: boolean | undefined;
 
     const {getByDataCy} = render(
-      <Dropdown<HTMLDivElement>
+      <Dropdown
         onVisible={({visible}) => (result = visible)}
         onClick={() => {}}
         renderMain={() => <div data-cy="dropdown">"dropdown"</div>}
@@ -78,6 +78,7 @@ describe('test/components/Dropdown.test.ts', () => {
     const {getByDataCy} = render(
       <Dropdown
         onVisible={({visible}) => (result = visible)}
+        defaultVisible={true}
         onClick={() => {}}
         loading
         renderMain={({...props}) => (

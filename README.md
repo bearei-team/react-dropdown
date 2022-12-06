@@ -12,24 +12,24 @@ Base dropdown components that support React and React native
 
 | Name | Type | Required | Description |
 | :-- | --: | --: | :-- |
-| visible | `boolean` | ✘ | Dropdown the visible status |
-| event | `React.MouseEvent` `React.TouchEvent` `GestureResponderEvent` | ✘ | Event that triggers a dropdown visible state change |
+| visible | `boolean` | ✘ | Dropdown visible state |
+| event | `React.MouseEvent` `React.TouchEvent` `GestureResponderEvent` | ✘ | Triggers an event when a dropdown option changes |
 
 #### Dropdown
 
 | Name | Type | Required | Description |
 | :-- | --: | --: | :-- |
-| defaultVisible | `boolean` | ✘ | Set the default visible state of the dropdown |
-| visible | `boolean` | ✘ | Dropdown the visible status |
-| menu | `MenuProps` | ✘ | Dropdown menu configuration options -- [Menu](https://github.com/bear-ei/react-menu) |
+| visible | `boolean` | ✘ | Dropdown visible state |
+| defaultVisible | `boolean` | ✘ | The default visible state for the dropdown |
+| menu | `MenuProps` | ✘ | Dropdown menu menu props -- [Menu](https://github.com/bear-ei/react-menu) |
 | disabled | `boolean` | ✘ | Whether or not to disable the dropdown |
 | loading | `boolean` | ✘ | Whether or not the dropdown is loading |
-| onVisible | `(options: DropdownOptions) => void` | ✘ | Call this function when the dropdown closes |
-| onClose | `(options: DropdownOptions) => void` | ✘ | Call this function when the dropdown closes |
-| onClick | `(e: MouseEvent) => void` | ✘ | Call this function back when you click the dropdown |
-| onTouchEnd | `(e: TouchEvent) => void` | ✘ | Call this function after pressing the dropdown |
-| onPress | `(e: GestureResponderEvent) => void` | ✘ | Call this function after pressing the dropdown -- react native |
-| renderMain | `(props: props: DropdownMainProps) => ReactNode` | ✘ | Render the dropdown main |
+| onVisible | `(options: DropdownOptions) => void` | ✘ | This function is called when the dropdown visible state changes |
+| onClose | `(options: DropdownOptions) => void` | ✘ | This function is called when the dropdown is closed |
+| onClick | `(e: React.MouseEvent) => void` | ✘ | This function is called when dropdown is clicked |
+| onTouchEnd | `(e: React.TouchEvent) => void` | ✘ | This function is called when the dropdown is pressed |
+| onPress | `(e: GestureResponderEvent) => void` | ✘ | This function is called when the dropdown is pressed -- react native |
+| renderMain | `(props: DropdownMainProps) => ReactNode` | ✘ | Render the dropdown main |
 | renderContainer | `(props: props: DropdownContainerProps) => ReactNode` | ✘ | Render the dropdown container |
 
 ## Use
@@ -40,14 +40,10 @@ import ReactDOM from 'react-dom';
 import Dropdown from '@bearei/react-dropdown';
 
 const dropdown = (
-  <Dropdown<HTMLDivElement>
-    renderMain={({...props}) => (
-      <div {...pickHTMLAttributes(props)} data-cy="dropdown">
-        "dropdown"
-      </div>
-    )}
+  <Dropdown
+    renderMain={({...props}) => <div {...props}>"dropdown"</div>}
     renderContainer={({id, children}) => (
-      <div data-cy="container" data-id={id} tabIndex={1}>
+      <div data-id={id} tabIndex={1}>
         {children}
       </div>
     )}
