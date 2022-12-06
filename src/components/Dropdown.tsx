@@ -16,14 +16,9 @@ import type {GestureResponderEvent, ViewProps} from 'react-native';
 /**
  * Dropdown options
  */
-export interface DropdownOptions<E = unknown> {
+export interface DropdownOptions<E = unknown> extends Pick<BaseDropdownProps, 'visible'> {
   /**
-   * Dropdown the visible status
-   */
-  visible?: boolean;
-
-  /**
-   * Event that triggers a dropdown visible state change
+   * Triggers an event when a dropdown option changes
    */
   event?: E;
 }
@@ -33,7 +28,7 @@ export interface DropdownOptions<E = unknown> {
  */
 export interface BaseDropdownProps<T = HTMLElement>
   extends Omit<
-    DetailedHTMLProps<HTMLAttributes<T>, T> & ViewProps & Pick<DropdownOptions, 'visible'>,
+    DetailedHTMLProps<HTMLAttributes<T>, T> & ViewProps,
     'onClick' | 'onTouchEnd' | 'onPress'
   > {
   /**
@@ -42,13 +37,15 @@ export interface BaseDropdownProps<T = HTMLElement>
   ref?: Ref<T>;
 
   /**
-   * Set the default visible state of the dropdown
+   * Dropdown visible state
+   */
+  visible?: boolean;
+
+  /**
+   * The default visible state for the dropdown
    */
   defaultVisible?: boolean;
 
-  /**
-   * Dropdown menu configuration options
-   */
   menu?: BaseMenuProps<T>;
 
   /**
@@ -62,27 +59,27 @@ export interface BaseDropdownProps<T = HTMLElement>
   loading?: boolean;
 
   /**
-   * Call back this function when the dropdown visible state changes
+   * This function is called when the dropdown visible state changes
    */
   onVisible?: <E>(options: DropdownOptions<E>) => void;
 
   /**
-   * Call this function when the dropdown closes
+   * This function is called when the dropdown is closed
    */
   onClose?: <E>(options: DropdownOptions<E>) => void;
 
   /**
-   * Call this function back when you click the card
+   * This function is called when dropdown is clicked
    */
   onClick?: (e: React.MouseEvent<T, MouseEvent>) => void;
 
   /**
-   * Call this function after pressing the card
+   * This function is called when the dropdown is pressed
    */
   onTouchEnd?: (e: TouchEvent<T>) => void;
 
   /**
-   * Call this function after pressing the card -- react native
+   * This function is called when the dropdown is pressed -- react native
    */
   onPress?: (e: GestureResponderEvent) => void;
 }
@@ -120,15 +117,15 @@ export type DropdownContainerProps<T> = DropdownChildrenProps<T> &
 const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
   const {
     ref,
-    disabled,
     loading,
     visible,
+    disabled,
     defaultVisible,
     onClick,
     onPress,
-    onTouchEnd,
-    onVisible,
     onClose,
+    onVisible,
+    onTouchEnd,
     renderMain,
     renderContainer,
     ...args
@@ -139,6 +136,7 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
   const [dropdownOptions, setDropDownOptions] = useState<DropdownOptions>({visible: false});
   const events = Object.keys(props).filter(key => key.startsWith('on'));
   const childrenProps = {...args, visible: dropdownOptions.visible, id};
+
   const handleDropdownOptionsChange = useCallback(
     <E,>(options: DropdownOptions<E>) => {
       onVisible?.(options);
@@ -148,9 +146,9 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
   );
 
   const handleResponse = <E,>(e: E, callback?: (e: E) => void) => {
-    const response = !loading && !disabled;
+    const isResponse = !loading && !disabled;
 
-    if (response) {
+    if (isResponse) {
       const nextVisible = !dropdownOptions.visible;
       const options = {event: e, visible: nextVisible};
 
@@ -177,9 +175,9 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
 
     typeof nextVisible === 'boolean' &&
       setDropDownOptions(currentOptions => {
-        const change = currentOptions.visible !== nextVisible && status === 'succeeded';
+        const isUpdate = currentOptions.visible !== nextVisible && status === 'succeeded';
 
-        change && handleDropdownOptionsChange({visible: nextVisible});
+        isUpdate && handleDropdownOptionsChange({visible: nextVisible});
 
         return {visible: nextVisible};
       });
