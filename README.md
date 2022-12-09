@@ -21,7 +21,7 @@ Base dropdown components that support React and React native
 | :-- | --: | --: | :-- |
 | visible | `boolean` | ✘ | Dropdown visible state |
 | defaultVisible | `boolean` | ✘ | The default visible state for the dropdown |
-| menu | `MenuProps` | ✘ | Dropdown menu menu props -- [Menu](https://github.com/bear-ei/react-menu) |
+| menu | `MenuProps` | ✘ | Dropdown menu props -- [Menu](https://github.com/bear-ei/react-menu) |
 | disabled | `boolean` | ✘ | Whether or not to disable the dropdown |
 | loading | `boolean` | ✘ | Whether or not the dropdown is loading |
 | onVisible | `(options: DropdownOptions) => void` | ✘ | This function is called when the dropdown visible state changes |
@@ -29,8 +29,8 @@ Base dropdown components that support React and React native
 | onClick | `(e: React.MouseEvent) => void` | ✘ | This function is called when dropdown is clicked |
 | onTouchEnd | `(e: React.TouchEvent) => void` | ✘ | This function is called when the dropdown is pressed |
 | onPress | `(e: GestureResponderEvent) => void` | ✘ | This function is called when the dropdown is pressed -- react native |
-| renderMain | `(props: DropdownMainProps) => ReactNode` | ✘ | Render the dropdown main |
-| renderContainer | `(props: props: DropdownContainerProps) => ReactNode` | ✘ | Render the dropdown container |
+| renderMain | `(props: DropdownMainProps) => ReactNode` | ✔ | Render the dropdown main |
+| renderContainer | `(props: props: DropdownContainerProps) => ReactNode` | ✔ | Render the dropdown container |
 
 ## Use
 
