@@ -91,12 +91,12 @@ export interface DropdownProps<T> extends BaseDropdownProps<T> {
   /**
    * Render the dropdown main
    */
-  renderMain?: (props: DropdownMainProps<T>) => ReactNode;
+  renderMain: (props: DropdownMainProps<T>) => ReactNode;
 
   /**
    * Render the dropdown container
    */
-  renderContainer?: (props: DropdownContainerProps<T>) => ReactNode;
+  renderContainer: (props: DropdownContainerProps<T>) => ReactNode;
 }
 
 /**
@@ -185,13 +185,11 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
     status === 'idle' && setStatus('succeeded');
   }, [defaultVisible, handleDropdownOptionsChange, status, visible]);
 
-  const main = renderMain?.({...childrenProps});
-  const content = <>{main}</>;
-  const container = renderContainer?.({
+  const main = renderMain({...childrenProps, ...bindEvents(events, handleCallback)});
+  const container = renderContainer({
     ...childrenProps,
     ref,
-    children: content,
-    ...bindEvents(events, handleCallback),
+    children: main,
   });
 
   return <>{container}</>;
