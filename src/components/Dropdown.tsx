@@ -136,6 +136,7 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
   const [dropdownOptions, setDropDownOptions] = useState<DropdownOptions>({visible: false});
   const events = Object.keys(props).filter(key => key.startsWith('on'));
   const childrenProps = {...args, visible: dropdownOptions.visible, id};
+
   const handleDropdownOptionsChange = useCallback(
     <E,>(options: DropdownOptions<E>) => {
       onVisible?.(options);
