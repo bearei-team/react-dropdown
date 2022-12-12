@@ -110,9 +110,8 @@ export interface DropdownChildrenProps<T> extends Omit<BaseDropdownProps<T>, 're
   children?: ReactNode;
 }
 
-export type DropdownMainProps<T> = DropdownChildrenProps<T>;
-export type DropdownContainerProps<T> = DropdownChildrenProps<T> &
-  Pick<BaseDropdownProps<T>, 'ref'>;
+export type DropdownMainProps<T> = DropdownChildrenProps<T> & Pick<BaseDropdownProps<T>, 'ref'>;
+export type DropdownContainerProps<T> = DropdownChildrenProps<T>;
 
 const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
   const {
@@ -185,10 +184,9 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
     status === 'idle' && setStatus('succeeded');
   }, [defaultVisible, handleDropdownOptionsChange, status, visible]);
 
-  const main = renderMain({...childrenProps, ...bindEvents(events, handleCallback)});
+  const main = renderMain({...childrenProps, ref, ...bindEvents(events, handleCallback)});
   const container = renderContainer({
     ...childrenProps,
-    ref,
     children: main,
   });
 
