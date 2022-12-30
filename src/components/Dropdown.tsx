@@ -1,5 +1,8 @@
-import type {BaseMenuProps} from '@bearei/react-menu';
-import {bindEvents, handleDefaultEvent} from '@bearei/react-util/lib/event';
+import type { BaseMenuProps } from '@bearei/react-menu';
+import {
+  bindEvents,
+  handleDefaultEvent,
+} from '@bearei/react-util/lib/commonjs/event';
 import {
   DetailedHTMLProps,
   HTMLAttributes,
@@ -11,12 +14,13 @@ import {
   useId,
   useState,
 } from 'react';
-import type {GestureResponderEvent, ViewProps} from 'react-native';
+import type { GestureResponderEvent, ViewProps } from 'react-native';
 
 /**
  * Dropdown options
  */
-export interface DropdownOptions<E = unknown> extends Pick<BaseDropdownProps, 'visible'> {
+export interface DropdownOptions<T, E = unknown>
+  extends Pick<BaseDropdownProps<T>, 'visible'> {
   /**
    * Triggers an event when a dropdown option changes
    */
@@ -26,7 +30,7 @@ export interface DropdownOptions<E = unknown> extends Pick<BaseDropdownProps, 'v
 /**
  * Base dropdown props
  */
-export interface BaseDropdownProps<T = HTMLElement>
+export interface BaseDropdownProps<T>
   extends Omit<
     DetailedHTMLProps<HTMLAttributes<T>, T> & ViewProps,
     'onClick' | 'onTouchEnd' | 'onPress'
@@ -61,12 +65,12 @@ export interface BaseDropdownProps<T = HTMLElement>
   /**
    * This function is called when the dropdown visible state changes
    */
-  onVisible?: <E>(options: DropdownOptions<E>) => void;
+  onVisible?: <E>(options: DropdownOptions<T, E>) => void;
 
   /**
    * This function is called when the dropdown is closed
    */
-  onClose?: <E>(options: DropdownOptions<E>) => void;
+  onClose?: <E>(options: DropdownOptions<T, E>) => void;
 
   /**
    * This function is called when dropdown is clicked
@@ -102,7 +106,8 @@ export interface DropdownProps<T> extends BaseDropdownProps<T> {
 /**
  * Dropdown children props
  */
-export interface DropdownChildrenProps<T> extends Omit<BaseDropdownProps<T>, 'ref'> {
+export interface DropdownChildrenProps<T>
+  extends Omit<BaseDropdownProps<T>, 'ref'> {
   /**
    * Component unique ID
    */
@@ -110,10 +115,14 @@ export interface DropdownChildrenProps<T> extends Omit<BaseDropdownProps<T>, 're
   children?: ReactNode;
 }
 
-export type DropdownMainProps<T> = DropdownChildrenProps<T> & Pick<BaseDropdownProps<T>, 'ref'>;
+export type DropdownMainProps<T> = DropdownChildrenProps<T> &
+  Pick<BaseDropdownProps<T>, 'ref'>;
+
 export type DropdownContainerProps<T> = DropdownChildrenProps<T>;
 
-const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
+const Dropdown = <T extends HTMLElement = HTMLElement>(
+  props: DropdownProps<T>,
+) => {
   const {
     ref,
     loading,
@@ -132,12 +141,14 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
 
   const id = useId();
   const [status, setStatus] = useState('idle');
-  const [dropdownOptions, setDropDownOptions] = useState<DropdownOptions>({visible: false});
-  const events = Object.keys(props).filter(key => key.startsWith('on'));
-  const childrenProps = {...args, visible: dropdownOptions.visible, id};
+  const [dropdownOptions, setDropDownOptions] = useState<DropdownOptions<T>>({
+    visible: false,
+  });
 
+  const events = Object.keys(props).filter(key => key.startsWith('on'));
+  const childrenProps = { ...args, visible: dropdownOptions.visible, id };
   const handleDropdownOptionsChange = useCallback(
-    <E,>(options: DropdownOptions<E>) => {
+    <E,>(options: DropdownOptions<T, E>) => {
       onVisible?.(options);
       !options.visible && onClose?.(options);
     },
@@ -149,7 +160,7 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
 
     if (isResponse) {
       const nextVisible = !dropdownOptions.visible;
-      const options = {event: e, visible: nextVisible};
+      const options = { event: e, visible: nextVisible };
 
       setDropDownOptions(options);
       handleDropdownOptionsChange(options);
@@ -162,8 +173,12 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
       onClick: handleDefaultEvent((e: React.MouseEvent<T, MouseEvent>) =>
         handleResponse(e, onClick),
       ),
-      onTouchEnd: handleDefaultEvent((e: TouchEvent<T>) => handleResponse(e, onTouchEnd)),
-      onPress: handleDefaultEvent((e: GestureResponderEvent) => handleResponse(e, onPress)),
+      onTouchEnd: handleDefaultEvent((e: TouchEvent<T>) =>
+        handleResponse(e, onTouchEnd),
+      ),
+      onPress: handleDefaultEvent((e: GestureResponderEvent) =>
+        handleResponse(e, onPress),
+      ),
     };
 
     return event[key as keyof typeof event];
@@ -174,17 +189,23 @@ const Dropdown = <T extends HTMLElement>(props: DropdownProps<T>) => {
 
     typeof nextVisible === 'boolean' &&
       setDropDownOptions(currentOptions => {
-        const isUpdate = currentOptions.visible !== nextVisible && status === 'succeeded';
+        const isUpdate =
+          currentOptions.visible !== nextVisible && status === 'succeeded';
 
-        isUpdate && handleDropdownOptionsChange({visible: nextVisible});
+        isUpdate && handleDropdownOptionsChange({ visible: nextVisible });
 
-        return {visible: nextVisible};
+        return { visible: nextVisible };
       });
 
     status === 'idle' && setStatus('succeeded');
   }, [defaultVisible, handleDropdownOptionsChange, status, visible]);
 
-  const main = renderMain({...childrenProps, ref, ...bindEvents(events, handleCallback)});
+  const main = renderMain({
+    ...childrenProps,
+    ref,
+    ...bindEvents(events, handleCallback),
+  });
+
   const container = renderContainer({
     ...childrenProps,
     children: main,

@@ -1,20 +1,20 @@
-import {pickHTMLAttributes} from '@bearei/react-util';
+import { pickHTMLAttributes } from '@bearei/react-util';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import Dropdown from '../../src/components/Dropdown';
-import {render} from '../utils/testUtils';
+import { render } from '../utils/test_utils';
 
 describe('test/components/Dropdown.test.ts', () => {
   test('It should be a render dropdown', async () => {
-    const {getByDataCy} = render(
+    const { getByDataCy } = render(
       <Dropdown
-        renderMain={({...props}) => (
+        renderMain={({ ...props }) => (
           <div {...pickHTMLAttributes(props)} data-cy="dropdown">
             "dropdown"
           </div>
         )}
-        renderContainer={({id, children}) => (
+        renderContainer={({ id, children }) => (
           <div data-cy="container" data-id={id} tabIndex={1}>
             {children}
           </div>
@@ -30,16 +30,16 @@ describe('test/components/Dropdown.test.ts', () => {
     const user = userEvent.setup();
     let result!: boolean | undefined;
 
-    const {getByDataCy} = render(
+    const { getByDataCy } = render(
       <Dropdown
-        onVisible={({visible}) => (result = visible)}
+        onVisible={({ visible }) => (result = visible)}
         onClick={() => {}}
-        renderMain={({onClick}) => (
+        renderMain={({ onClick }) => (
           <div data-cy="dropdown" onClick={onClick}>
             "dropdown"
           </div>
         )}
-        renderContainer={({children, ...props}) => (
+        renderContainer={({ children, ...props }) => (
           <div {...pickHTMLAttributes(props)} data-cy="container">
             {children}
           </div>
@@ -55,17 +55,17 @@ describe('test/components/Dropdown.test.ts', () => {
     const user = userEvent.setup();
     let result!: boolean | undefined;
 
-    const {getByDataCy} = render(
+    const { getByDataCy } = render(
       <Dropdown
-        onVisible={({visible}) => (result = visible)}
+        onVisible={({ visible }) => (result = visible)}
         onClick={() => {}}
         disabled
-        renderMain={({onClick}) => (
+        renderMain={({ onClick }) => (
           <div data-cy="dropdown" onClick={onClick}>
             "dropdown"
           </div>
         )}
-        renderContainer={({children, ...props}) => (
+        renderContainer={({ children, ...props }) => (
           <div {...pickHTMLAttributes(props)} data-cy="container">
             {children}
           </div>
@@ -81,18 +81,18 @@ describe('test/components/Dropdown.test.ts', () => {
     const user = userEvent.setup();
     let result!: boolean | undefined;
 
-    const {getByDataCy} = render(
+    const { getByDataCy } = render(
       <Dropdown
-        onVisible={({visible}) => (result = visible)}
+        onVisible={({ visible }) => (result = visible)}
         defaultVisible={true}
         onClick={() => {}}
         loading
-        renderMain={({onClick}) => (
+        renderMain={({ onClick }) => (
           <div data-cy="dropdown" onClick={onClick}>
             "dropdown"
           </div>
         )}
-        renderContainer={({children, ...props}) => (
+        renderContainer={({ children, ...props }) => (
           <div {...pickHTMLAttributes(props)} data-cy="container">
             {children}
           </div>
