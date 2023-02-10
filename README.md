@@ -42,9 +42,9 @@ import Dropdown from '@bearei/react-dropdown';
 const dropdown = (
   <Dropdown
     renderMain={({ ...props }) => <div {...props}>"dropdown"</div>}
-    renderContainer={({ id, children }) => (
+    renderContainer={({ id, content }) => (
       <div data-id={id} tabIndex={1}>
-        {children}
+        {content}
       </div>
     )}
   />

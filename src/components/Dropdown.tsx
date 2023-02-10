@@ -51,6 +51,11 @@ export interface BaseDropdownProps<T>
    */
   defaultVisible?: boolean;
 
+  /**
+   * Dropdown content
+   */
+  content?: ReactNode;
+
   menu?: BaseMenuProps<T>;
 
   /**
